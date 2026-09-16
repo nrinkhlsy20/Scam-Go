@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ScamGo - Scam Message Scanner</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #1f2937;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #d1d5db;
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 35px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .description {
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      padding: 15px;
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #2563eb;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #result {
+      display: none;
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 14px;
+    }
+
+    .danger {
+      background: #fee2e2;
+      border: 2px solid #ef4444;
+    }
+
+    .warning {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+    }
+
+    .safe {
+      background: #dcfce7;
+      border: 2px solid #22c55e;
+    }
+
+    .result-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .result-text {
+      line-height: 1.6;
+    }
+
+    .signs {
+      margin-top: 12px;
+      padding-left: 20px;
+    }
+
+    .tip {
+      margin-top: 25px;
+      padding: 15px;
+      background: #eff6ff;
+      border-radius: 12px;
+      color: #1e40af;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 25px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🛡️ ScamGo</h1>
+    <p>Scam Message Detection Tool</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+
+      <h2>Scan a Message</h2>
+
+      <p class="description">
+        Paste a suspicious message below and ScamGo will check for common scam warning signs.
+      </p>
+
+      <textarea
+        id="message"
+        placeholder="Paste your message here..."
+      ></textarea>
+
+      <button onclick="scanMessage()">
+        🔍 Scan Message
+      </button>
+
+      <div id="result">
+
+        <div class="result-title" id="resultTitle"></div>
+
+        <div class="result-text" id="resultText"></div>
+
+        <ul class="signs" id="signs"></ul>
+
+      </div>
+
+      <div class="tip">
+        💡 <b>Safety tip:</b> Never share your password, OTP, PIN or banking details with someone who asks for them through a suspicious message.
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    ScamGo © 2026 | Stay alert, stay safe.
+  </footer>
+
+
+  <script>
+
+    function scanMessage() {
+
+      const messageBox = document.getElementById("message");
+      const message = messageBox.value.toLowerCase().trim();
+
+      const result = document.getElementById("result");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultText = document.getElementById("resultText");
+      const signsList = document.getElementById("signs");
+
+      result.style.display = "block";
+      signsList.innerHTML = "";
+
+      if (message === "") {
+
+        result.className = "warning";
+
+        resultTitle.textContent = "⚠️ No message entered";
+
+        resultText.textContent =
+          "Please paste a message before scanning.";
+
+        return;
+      }
+
+
+      /*
+        Common scam warning signs
+      */
+
+      const warningPatterns = [
+
+        {
+          words: ["otp", "one time password"],
+          reason: "The message asks for an OTP."
+        },
+
+        {
+          words: ["password", "kata laluan"],
+          reason: "The message asks for a password."
+        },
+
+        {
+          words: ["pin", "security pin"],
+          reason: "The message mentions or requests a PIN."
+        },
+
+        {
+          words: ["urgent", "segera", "cepat", "sekarang"],
+          reason: "The message uses urgent or pressuring language."
+        },
+
+        {
+          words: ["click", "klik", "link", "pautan"],
+          reason: "The message contains a request to click a link."
+        },
+
+        {
+          words: ["winner", "won", "menang", "hadiah", "prize"],
+          reason: "The message claims that you won a prize or reward."
+        },
+
+        {
+          words: ["bank account", "akaun bank", "banking"],
+          reason: "The message refers to banking or account information."
+        },
+
+        {
+          words: ["verify", "verification", "sahkan", "pengesahan"],
+          reason: "The message asks you to verify information."
+        },
+
+        {
+          words: ["refund", "bayaran balik", "pulangan wang"],
+          reason: "The message mentions a refund or unexpected payment."
+        },
+
+        {
+          words: ["free", "percuma"],
+          reason: "The message uses a free offer to attract attention."
+        },
+
+        {
+          words: ["rm", "duit", "money", "payment", "bayaran"],
+          reason: "The message involves money or payment."
+        }
+
+      ];
+
+
+      let detectedSigns = [];
+
+
+      warningPatterns.forEach(pattern => {
+
+        const found = pattern.words.some(word =>
+          message.includes(word)
+        );
+
+        if (found) {
+          detectedSigns.push(pattern.reason);
+        }
+
+      });
+
+
+      /*
+        Detect suspicious URLs
+      */
+
+      const urlPattern = /(https?:\/\/|www\.|bit\.ly|tinyurl|t\.co)/i;
+
+      if (urlPattern.test(message)) {
+
+        detectedSigns.push(
+          "The message contains a potentially suspicious link."
+        );
+
+      }
+
+
+      /*
+        Determine result
+      */
+
+      if (detectedSigns.length >= 3) {
+
+        result.className = "danger";
+
+        resultTitle.textContent = "🚨 High Scam Risk";
+
+        resultText.textContent =
+          "This message contains several common scam warning signs. Be careful and avoid clicking links or sharing personal information.";
+
+      }
+
+      else if (detectedSigns.length >= 1) {
+
+        result.className = "warning";
+
+        resultTitle.textContent = "⚠️ Suspicious Message";
+
+        resultText.textContent =
+          "This message contains one or more warning signs. Check the sender and information carefully before taking action.";
+
+      }
+
+      else {
+
+        result.className = "safe";
+
+        resultTitle.textContent = "✅ No Common Scam Signs Detected";
+
+        resultText.textContent =
+          "ScamGo did not detect the common warning signs checked by this scanner. However, this does not guarantee that the message is safe.";
+
+      }
+
+
+      /*
+        Display detected signs
+      */
+
+      detectedSigns.forEach(sign => {
+
+        const li = document.createElement("li");
+
+        li.textContent = sign;
+
+        signsList.appendChild(li);
+
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>
